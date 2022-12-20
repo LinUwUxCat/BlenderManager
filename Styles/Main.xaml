@@ -1,7 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style Selector="Window">
-        <Setter Property = "Background" Value="#1b1e20"/>
+        <Setter Property = "Background" Value="#181818"/>
     </Style>
     <Style Selector="Button">
         <Setter Property = "Background" Value="#151718"/>
@@ -14,5 +14,17 @@
     </Style>
     <Style Selector="Label.h1">
         <Setter Property = "FontSize" Value = "42"/>
+    </Style>
+    <Style Selector="ListBoxItem">
+        <Setter Property="Margin" Value="7"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Background" Value="#2C2C2C"/>
+    </Style>
+    <Style Selector="ListBoxItem StackPanel Label.versionnumber">
+        <Setter Property="FontSize" Value="22"/>
+    </Style>
+    <Style Selector="ListBoxItem StackPanel Label.folderpath">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="gray"/>
     </Style>
 </Styles>

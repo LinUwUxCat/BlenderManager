@@ -9,21 +9,25 @@
         <Window.Styles>
             <StyleInclude Source="/Styles/Main.xaml"/>
         </Window.Styles>
-        <Window.DataTemplates>
-            <DataTemplate DataType="{x:Type local:VersionViewModel}">
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="{Binding VersionString}"/>
-                    <Image Width="64" Source="{Binding Icon}"/>
-                </StackPanel>
-            </DataTemplate>
-        </Window.DataTemplates>
+
     <StackPanel Margin="30">
         <Label Classes="h1" Content="{Binding TitleText}"/>
         <StackPanel Orientation="Horizontal">
             <Label Content="Installation directory : "/>
             <Label Content="{Binding InstallDir}"/>
             <Button Content="Change" Command="{Binding ChangeInstallDir}"/>
-            <ListBox Items="{Binding Versions}" Background="transparent" Margin="0 10"/>
+            <ListBox Items="{Binding Versions}" Background="transparent">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type local:VersionViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding VersionString}" Classes="versionnumber"/>
+                            <Label Content="{Binding FolderPath}" Classes="folderpath"/>
+                            <Image Width="32" Source="{Binding Icon}" Classes="systemicon"/>
+                            <Button Content="{Binding LaunchText}" Command="{Binding LaunchVersion}" Classes="launchbutton" IsEnabled="{Binding ButtonState}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </StackPanel>
         <Button Content="{Binding ButtonText}" Command="{Binding ButtonClicked}"/>
         <Label Content="{Binding VersionList}"/>

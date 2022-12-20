@@ -62,25 +62,8 @@ class LogicSys{
     }
 
     /// <summary>
-    /// Lists all versions of blender installed into the provided folder.
-    /// </summary>
-    /// <remarks>The folder passed should be Config.installFolder</remarks>
-    // public List<List<string>> Versions(string folder){
-    //     var r = new List<List<string>>();
-    //     DirectoryInfo dir = new DirectoryInfo(folder);
-    //     foreach(DirectoryInfo d in dir.GetDirectories()){
-    //         var l = d.Name.Split('-');
-            
-    //         if (l[0].ToLower() == "blender" && l.Length>1 && isABlenderFolder(d, l[1])){
-    //             if (l.Length == 2){
-    //                 r.Add(new List<string>{l[1], "unknown"});
-    //             } else r.Add(new List<string>{l[1], l.Length>3&&l[2]=="release"?l[3]:l[2]}); //skip "release"
-    //         }
-    //     }
-    //     return r;
-    // }
-
     /// I'd rather not explain this function.
+    /// </summary>
     private bool isABlenderFolder(DirectoryInfo d, string version){
         return Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender") && Array.Exists(Directory.GetDirectories(d.FullName), x=>version.StartsWith(x.Split(Path.DirectorySeparatorChar)[x.Split(Path.DirectorySeparatorChar).Length-1]));
     }

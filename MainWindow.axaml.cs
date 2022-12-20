@@ -52,6 +52,10 @@ namespace BlenderManager{
             get=>l.Versions;
             set=>PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsInstalled)));
         }
+
+        public void AddVersion(){
+            //TODO : tomorrow
+        }
         public void ButtonClicked() {
             l.installFolder = "/home/linuxcat/blender";
             var v = l.Versions;
