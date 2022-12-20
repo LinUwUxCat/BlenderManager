@@ -6,7 +6,7 @@ using ReactiveUI;
 using Logic;
 
 namespace BlenderManager.ViewModels;
-public class VersionViewModel : ViewModelBase{
+public class VersionViewModel : ReactiveObject{
     private readonly Version _version;
     private Bitmap? _icon;
 
