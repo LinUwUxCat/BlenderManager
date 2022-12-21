@@ -12,25 +12,33 @@
 
     <StackPanel Margin="30">
         <Label Classes="h1" Content="{Binding TitleText}"/>
-        <StackPanel Orientation="Horizontal">
-            <Label Content="Installation directory : "/>
-            <Label Content="{Binding InstallDir}"/>
-            <Button Content="Change" Command="{Binding ChangeInstallDir}"/>
-            <ListBox Items="{Binding Versions}" Background="transparent">
-                <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type local:VersionViewModel}">
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="{Binding VersionString}" Classes="versionnumber"/>
-                            <Label Content="{Binding FolderPath}" Classes="folderpath"/>
-                            <Image Width="32" Source="{Binding Icon}" Classes="systemicon"/>
-                            <Button Content="{Binding LaunchText}" Command="{Binding LaunchVersion}" Classes="launchbutton" IsEnabled="{Binding ButtonState}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Classes="panel-top"> <!-- Panel with the list of versions and some other text -->
+                <!-- <Label Content="Installation directory : "/>
+                <Label Content="{Binding InstallDir}"/>
+                <Button Content="Change" Command="{Binding ChangeInstallDir}"/> -->
+
+                <ListBox Items="{Binding Versions}" Background="transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type local:VersionViewModel}">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding VersionString}" Classes="versionnumber"/>
+                                <Label Content="{Binding FolderPath}" Classes="folderpath"/>
+                                <Image Width="32" Source="{Binding Icon}" Classes="systemicon"/>
+                                <Button Content="{Binding LaunchText}" Command="{Binding LaunchVersion}" Classes="launchbutton" IsEnabled="{Binding ButtonState}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Classes="panel-bottom"> 
+                <DropDown Items="{Binding VersionsWebsite}" SelectedItem="{Binding WebVersionSelected}"/>
+                <Button Command="{Binding ReloadVersionsFromWebsite}" Content="Reload"/>
+                <DropDown Items="{Binding ListWithVersion}"/>
+            </StackPanel>
         </StackPanel>
         <Button Content="{Binding ButtonText}" Command="{Binding ButtonClicked}"/>
-        <Label Content="{Binding VersionList}"/>
+        <!-- <Label Content="{Binding VersionList}"/> -->
     </StackPanel>
    
 </Window>

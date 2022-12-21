@@ -29,8 +29,8 @@ namespace BlenderManager{
         }
         
        
-
         LogicSys l = new LogicSys();
+        List<string> _versionList = new();
         string installDir = "";
         string versionListText = "";
         public string InstallDir{
@@ -53,8 +53,30 @@ namespace BlenderManager{
             set=>PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsInstalled)));
         }
 
+        public List<string> VersionsWebsite{
+            get=>l.GetVersionListFromWeb();
+            set=>PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsWebsite)));
+        }
+        public List<string> _listWithVersion=new();
+        public string? WebVersionSelected{
+            set{
+                if (value!=null)_listWithVersion = l.GetListFromVersion(value);
+                else _listWithVersion = new();
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ListWithVersion)));
+            }
+        }
+
+        public List<string> ListWithVersion{
+            get=>_listWithVersion;
+            set=>PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ListWithVersion)));
+        }
         public void AddVersion(){
             //TODO : tomorrow
+        }
+
+        public void ReloadVersionsFromWebsite(){
+            _versionList = l.GetVersionListFromWeb();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsWebsite)));
         }
         public void ButtonClicked() {
             l.installFolder = "/home/linuxcat/blender";
@@ -71,9 +93,9 @@ namespace BlenderManager{
                     Versions.Add(new VersionViewModel(l));
                 }
             }
+            _versionList = l.GetVersionListFromWeb();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsInstalled)));
             VersionList = versionListText;
-            
         }
     }
 }

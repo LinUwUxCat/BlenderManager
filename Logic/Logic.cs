@@ -1,6 +1,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System;
+using System.Net.Http;
 using System.Linq;
 namespace Logic;
 
@@ -62,9 +63,48 @@ class LogicSys{
     }
 
     /// <summary>
-    /// I'd rather not explain this function.
+    /// Returns true if the folder is a blender folder, else false.
+    /// TODO: Add windows support
     /// </summary>
     private bool isABlenderFolder(DirectoryInfo d, string version){
         return Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender") && Array.Exists(Directory.GetDirectories(d.FullName), x=>version.StartsWith(x.Split(Path.DirectorySeparatorChar)[x.Split(Path.DirectorySeparatorChar).Length-1]));
     }
+
+    public List<string> GetVersionListFromWeb(){
+        var client = new HttpClient();
+        var content = client.GetStringAsync("https://download.blender.org/release/");
+        if (content==null) return new List<string>{"Check Your internet"};
+        var html = content.Result;
+        var pre = html.Split("<pre>")[1].Split("</pre>")[0];
+        List<string> l = new();
+        foreach(string e in pre.Split("</a>")){
+            if (e.LastIndexOf("Blender")!=-1){
+                var v = e.Substring(e.LastIndexOf("Blender"));
+                v = v.Substring(7, v.Length-8);
+                if (!v.StartsWith("Benchmark")){
+                    l.Add(v);
+                }
+            }
+        }
+        return l;
+    }
+
+    public List<string> GetListFromVersion(string version){
+        var client = new HttpClient();
+        var content = client.GetStringAsync("https://download.blender.org/release/Blender"+version);
+        if (content==null) return new List<string>{"Check Your internet"};
+        var html = content.Result;
+        var pre = html.Split("<pre>")[1].Split("</pre>")[0];
+        List<string> l = new();
+        var href = pre.Split("<a href=\"");
+        foreach(string e in pre.Split("<a href=\"")){
+            if (e.StartsWith("blender")){
+                l.Add(e.Split("\">")[0]);
+            }
+        }
+        return l;
+
+
+    }
+
 }
