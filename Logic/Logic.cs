@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Net.Http;
 using System.Linq;
+
 namespace Logic;
 
 public class Version{
@@ -20,6 +21,7 @@ public class Version{
 class LogicSys{
     
     string? folder=null;
+    private HttpClient client = new();
     public string? installFolder{
         get=>folder;
         set{
@@ -71,7 +73,6 @@ class LogicSys{
     }
 
     public List<string> GetVersionListFromWeb(){
-        var client = new HttpClient();
         var content = client.GetStringAsync("https://download.blender.org/release/");
         if (content==null) return new List<string>{"Check Your internet"};
         var html = content.Result;
@@ -90,7 +91,6 @@ class LogicSys{
     }
 
     public List<string> GetListFromVersion(string version){
-        var client = new HttpClient();
         var content = client.GetStringAsync("https://download.blender.org/release/Blender"+version);
         if (content==null) return new List<string>{"Check Your internet"};
         var html = content.Result;
@@ -103,8 +103,8 @@ class LogicSys{
             }
         }
         return l;
-
-
     }
+
+
 
 }

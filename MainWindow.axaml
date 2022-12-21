@@ -34,7 +34,9 @@
             <StackPanel Orientation="Horizontal" Classes="panel-bottom"> 
                 <DropDown Items="{Binding VersionsWebsite}" SelectedItem="{Binding WebVersionSelected}"/>
                 <Button Command="{Binding ReloadVersionsFromWebsite}" Content="Reload"/>
-                <DropDown Items="{Binding ListWithVersion}"/>
+                <DropDown Items="{Binding ListWithVersion}" SelectedItem="{Binding WebSystemSelected}"/>
+                <Button Content="Download" Command="{Binding DownloadVersion}"/>
+                <ProgressBar Minimum="0" Maximum="{Binding TotalBytes}" Value="{Binding CurrentBytes}" ShowProgressText="false" IsVisible="{Binding Downloading}"/>
             </StackPanel>
         </StackPanel>
         <Button Content="{Binding ButtonText}" Command="{Binding ButtonClicked}"/>

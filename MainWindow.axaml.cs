@@ -1,10 +1,13 @@
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Logic;
 using BlenderManager.ViewModels;
+using System.Threading.Tasks;
+using System.Net.Http.Handlers;
+using System.Net.Http;
+using System.IO;
 namespace BlenderManager{
 
     public partial class MainWindow : Window
@@ -33,6 +36,9 @@ namespace BlenderManager{
         List<string> _versionList = new();
         string installDir = "";
         string versionListText = "";
+        public long? TotalBytes=0;
+        public long CurrentBytes=0;
+        public bool Downloading=true;
         public string InstallDir{
             get=>l.installFolder==null?"":l.installFolder;
             set{
@@ -58,11 +64,22 @@ namespace BlenderManager{
             set=>PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsWebsite)));
         }
         public List<string> _listWithVersion=new();
+        public string? _webVersionSelected;
+        public string? _webSystemSelected;
         public string? WebVersionSelected{
+            get=>_webVersionSelected;
             set{
                 if (value!=null)_listWithVersion = l.GetListFromVersion(value);
                 else _listWithVersion = new();
+                _webVersionSelected=value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ListWithVersion)));
+            }
+        }
+        public string? WebSystemSelected{
+            get=>_webSystemSelected;
+            set{
+                _webSystemSelected=value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WebVersionSelected)));
             }
         }
 
@@ -77,6 +94,23 @@ namespace BlenderManager{
         public void ReloadVersionsFromWebsite(){
             _versionList = l.GetVersionListFromWeb();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsWebsite)));
+        }
+
+        public async Task DownloadVersion(){
+            var handler = new HttpClientHandler();
+            var ph=new ProgressMessageHandler(handler);
+            ph.HttpReceiveProgress += (_, args) => {
+                if (args.TotalBytes!=null)TotalBytes = args.TotalBytes; 
+                else TotalBytes=0;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalBytes)));
+                CurrentBytes=args.BytesTransferred;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentBytes)));
+                System.Console.WriteLine("Got" + args.BytesTransferred + "out of" + args.TotalBytes);
+            };
+            var client = new HttpClient(ph);
+            var bytes = await client.GetByteArrayAsync("https://download.blender.org/release/Blender"+WebVersionSelected+"/"+WebSystemSelected);
+            File.WriteAllBytes(l.installFolder + Path.DirectorySeparatorChar + "blender-"+WebSystemSelected, bytes);
+            
         }
         public void ButtonClicked() {
             l.installFolder = "/home/linuxcat/blender";
