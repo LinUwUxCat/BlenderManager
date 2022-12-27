@@ -66,10 +66,9 @@ class LogicSys{
 
     /// <summary>
     /// Returns true if the folder is a blender folder, else false.
-    /// TODO: Add windows support
     /// </summary>
     private bool isABlenderFolder(DirectoryInfo d, string version){
-        return Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender") && Array.Exists(Directory.GetDirectories(d.FullName), x=>version.StartsWith(x.Split(Path.DirectorySeparatorChar)[x.Split(Path.DirectorySeparatorChar).Length-1]));
+        return (Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender")||Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender.exe")) && Array.Exists(Directory.GetDirectories(d.FullName), x=>version.StartsWith(x.Split(Path.DirectorySeparatorChar)[x.Split(Path.DirectorySeparatorChar).Length-1]));
     }
 
     public List<string> GetVersionListFromWeb(){
@@ -98,7 +97,7 @@ class LogicSys{
         List<string> l = new();
         var href = pre.Split("<a href=\"");
         foreach(string e in pre.Split("<a href=\"")){
-            if (e.StartsWith("blender")){
+            if (e.StartsWith("blender")&&!e.Contains("md5")&&!e.Contains("sha256")){
                 l.Add(e.Split("\">")[0]);
             }
         }

@@ -32,11 +32,11 @@
                 </ListBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Classes="panel-bottom"> 
-                <DropDown Items="{Binding VersionsWebsite}" SelectedItem="{Binding WebVersionSelected}"/>
-                <Button Command="{Binding ReloadVersionsFromWebsite}" Content="Reload"/>
-                <DropDown Items="{Binding ListWithVersion}" SelectedItem="{Binding WebSystemSelected}"/>
-                <Button Content="Download" Command="{Binding DownloadVersion}"/>
-                <ProgressBar Minimum="0" Maximum="{Binding TotalBytes}" Value="{Binding CurrentBytes}" ShowProgressText="false" IsVisible="{Binding Downloading}"/>
+                <DropDown Items="{Binding VersionsWebsite}" SelectedItem="{Binding WebVersionSelected}" IsEnabled="{Binding !Downloading}"/>
+                <Button Command="{Binding ReloadVersionsFromWebsite}" Content="Reload" IsEnabled="{Binding !Downloading}"/>
+                <DropDown Items="{Binding ListWithVersion}" SelectedItem="{Binding WebSystemSelected}" IsEnabled="{Binding !Downloading}"/>
+                <Button Content="Download" Command="{Binding DownloadVersion}" IsEnabled="{Binding !Downloading}"/>
+                <ProgressBar Minimum="0" Maximum="{Binding TotalBytes}" Value="{Binding CurrentBytes}" IsVisible="{Binding Downloading}"/>
             </StackPanel>
         </StackPanel>
         <Button Content="{Binding ButtonText}" Command="{Binding ButtonClicked}"/>

@@ -20,7 +20,21 @@ namespace BlenderManager{
     }
     
     public class MainWindowViewModel : INotifyPropertyChanged{
+
+        ///<summary>
+        ///Initialisation of the main window. We want to load our config file here.
+        ///</summary>
+        public MainWindowViewModel(){
+            l.installFolder = "/home/linuxcat/blender";
+            var v = l.Versions;
+            v.Sort((a,b) => a.versionString.CompareTo(b.versionString));
+            foreach(Version l in v){
+                Versions.Add(new VersionViewModel(l));
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
+        
         public string TitleText{
             get => "Blender Manager";
         }
@@ -35,7 +49,6 @@ namespace BlenderManager{
         LogicSys l = new LogicSys();
         List<string> _versionList = new();
         string installDir = "";
-        string versionListText = "";
         public long? _totalBytes;
         public long _currentBytes;
         public long? TotalBytes{
@@ -52,17 +65,18 @@ namespace BlenderManager{
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentBytes)));
             }
         }
-        public bool Downloading=true;
+        bool _downloading;
+        public bool Downloading{
+            get=>_downloading;
+            set{
+                _downloading=value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Downloading)));
+            }
+        }
         public string InstallDir{
             get=>l.installFolder==null?"":l.installFolder;
             set{
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallDir)));
-            }
-        }
-        public string VersionList{
-            get=>versionListText;
-            set{
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionList)));
             }
         }
 
@@ -106,7 +120,11 @@ namespace BlenderManager{
             _versionList = l.GetVersionListFromWeb();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsWebsite)));
         }
-
+        ///<summary>
+        ///Downloads a version from the blender releases page.
+        ///This also extracts from an archive (if applicable).
+        ///Should be called when clicking on a button as it depends on the version selected in the UI.
+        ///</summary>
         public async Task DownloadVersion(){
             var handler = new HttpClientHandler();
             var ph=new ProgressMessageHandler(handler);
@@ -121,23 +139,20 @@ namespace BlenderManager{
             
         }
         public void ButtonClicked() {
+            
             l.installFolder = "/home/linuxcat/blender";
             var v = l.Versions;
             v.Sort((a,b) => a.versionString.CompareTo(b.versionString));
-            versionListText ="";
             for(int i=Versions.Count-1; i>=0; i--){
                 Versions.Remove(Versions[i]);
             }
-            if (v==null) versionListText = ""; 
-            else {
+            if (v!=null){
                 foreach(Version l in v){
-                    versionListText+=l.versionString+"\n";
                     Versions.Add(new VersionViewModel(l));
                 }
             }
             _versionList = l.GetVersionListFromWeb();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsInstalled)));
-            VersionList = versionListText;
         }
     }
 }
