@@ -36,8 +36,22 @@ namespace BlenderManager{
         List<string> _versionList = new();
         string installDir = "";
         string versionListText = "";
-        public long? TotalBytes=0;
-        public long CurrentBytes=0;
+        public long? _totalBytes;
+        public long _currentBytes;
+        public long? TotalBytes{
+            get=>_totalBytes;
+            set{
+                _totalBytes=value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalBytes)));
+            }
+        }
+        public long CurrentBytes{
+            get=>_currentBytes;
+            set{
+                _currentBytes=value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentBytes)));
+            }
+        }
         public bool Downloading=true;
         public string InstallDir{
             get=>l.installFolder==null?"":l.installFolder;
@@ -87,9 +101,6 @@ namespace BlenderManager{
             get=>_listWithVersion;
             set=>PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ListWithVersion)));
         }
-        public void AddVersion(){
-            //TODO : tomorrow
-        }
 
         public void ReloadVersionsFromWebsite(){
             _versionList = l.GetVersionListFromWeb();
@@ -102,10 +113,7 @@ namespace BlenderManager{
             ph.HttpReceiveProgress += (_, args) => {
                 if (args.TotalBytes!=null)TotalBytes = args.TotalBytes; 
                 else TotalBytes=0;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalBytes)));
                 CurrentBytes=args.BytesTransferred;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentBytes)));
-                System.Console.WriteLine("Got" + args.BytesTransferred + "out of" + args.TotalBytes);
             };
             var client = new HttpClient(ph);
             var bytes = await client.GetByteArrayAsync("https://download.blender.org/release/Blender"+WebVersionSelected+"/"+WebSystemSelected);
