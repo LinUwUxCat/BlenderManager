@@ -139,7 +139,7 @@ namespace BlenderManager{
             
         }
         public void ButtonClicked() {
-            
+            l.Extract("blender-2.40-windows.zip");
             l.installFolder = "/home/linuxcat/blender";
             var v = l.Versions;
             v.Sort((a,b) => a.versionString.CompareTo(b.versionString));

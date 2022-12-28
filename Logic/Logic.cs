@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System;
 using System.Net.Http;
 using System.Linq;
-
+using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.BZip2;
+using ICSharpCode.SharpZipLib.Lzw;
+using ICSharpCode.SharpZipLib.Tar;
+using ICSharpCode.SharpZipLib.Zip;
 namespace Logic;
 
 public class Version{
@@ -68,7 +72,7 @@ class LogicSys{
     /// Returns true if the folder is a blender folder, else false.
     /// </summary>
     private bool isABlenderFolder(DirectoryInfo d, string version){
-        return (Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender")||Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender.exe")) && Array.Exists(Directory.GetDirectories(d.FullName), x=>version.StartsWith(x.Split(Path.DirectorySeparatorChar)[x.Split(Path.DirectorySeparatorChar).Length-1]));
+        return (Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender")||Directory.GetFiles(d.FullName).Contains(d.FullName + "/blender.exe"));// && Array.Exists(Directory.GetDirectories(d.FullName), x=>version.StartsWith(x.Split(Path.DirectorySeparatorChar)[x.Split(Path.DirectorySeparatorChar).Length-1]));
     }
 
     public List<string> GetVersionListFromWeb(){
@@ -104,6 +108,39 @@ class LogicSys{
         return l;
     }
 
+
+    public bool Extract(string fname){
+        var outdir = this.installFolder+"/";
+        if (fname.EndsWith("tar.gz") || fname.EndsWith("tgz")){ //Gzip
+            var inS = File.OpenRead(this.installFolder+"/"+fname);
+            var gz = new GZipInputStream(inS);
+            TarArchive tar = TarArchive.CreateInputTarArchive(gz, System.Text.Encoding.UTF8);
+            tar.ExtractContents(outdir);
+            tar.Close();
+            gz.Close();
+            inS.Close();
+        } else if (fname.EndsWith("tar.bz2") || fname.EndsWith("tbz")){ //Bzip2
+            var inS = File.OpenRead(this.installFolder + "/" + fname);
+            var bz = new BZip2InputStream(inS);
+            TarArchive tar = TarArchive.CreateInputTarArchive(bz, System.Text.Encoding.UTF8);
+            tar.ExtractContents(outdir);
+            tar.Close();
+            bz.Close();
+            inS.Close();
+        } else if (fname.EndsWith("tar.Z")){ //LZW
+            var inS = File.OpenRead(this.installFolder + "/" + fname);
+            var z = new LzwInputStream(inS);
+            TarArchive tar = TarArchive.CreateInputTarArchive(z, System.Text.Encoding.UTF8);
+            tar.ExtractContents(outdir);
+            tar.Close();
+            z.Close();
+            inS.Close();
+        } else if (fname.EndsWith("zip")){ //ZIP
+            FastZip fastZip = new FastZip();
+            fastZip.ExtractZip(this.installFolder + "/" + fname, outdir, null);
+        }
+        return true;
+    }
 
 
 }
