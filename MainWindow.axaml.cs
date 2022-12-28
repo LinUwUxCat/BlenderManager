@@ -15,21 +15,25 @@ namespace BlenderManager{
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+            DataContext = new MainWindowViewModel(this);
         }
     }
     
     public class MainWindowViewModel : INotifyPropertyChanged{
-
+        Window mainWindow;
         ///<summary>
         ///Initialisation of the main window. We want to load our config file here.
         ///</summary>
-        public MainWindowViewModel(){
-            l.installFolder = "/home/linuxcat/blender";
+        public MainWindowViewModel(Window mainWindow){
+            this.mainWindow = mainWindow;
+        }
+
+        public void RefreshVersions(){
             var v = l.Versions;
-            v.Sort((a,b) => a.versionString.CompareTo(b.versionString));
-            foreach(Version l in v){
-                Versions.Add(new VersionViewModel(l));
+            v.Sort((a,b) => b.versionString.CompareTo(a.versionString));
+            Versions.Clear();
+            foreach(Version ver in v){
+                Versions.Add(new VersionViewModel(ver));
             }
         }
 
@@ -48,7 +52,17 @@ namespace BlenderManager{
        
         LogicSys l = new LogicSys();
         List<string> _versionList = new();
-        string installDir = "";
+        public string InstallDirText{
+            get=>l.installFolder==null?"No install folder is set!":"Your blender installation folder is "+l.installFolder;
+            set{
+                l.installFolder=value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallDirButtonText)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallDirText)));
+            }
+        }
+        public string InstallDirButtonText{
+            get=>l.installFolder==null?"Choose a folder":"Change folder";
+        }
         public long? _totalBytes;
         public long _currentBytes;
         public long? TotalBytes{
@@ -71,12 +85,6 @@ namespace BlenderManager{
             set{
                 _downloading=value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Downloading)));
-            }
-        }
-        public string InstallDir{
-            get=>l.installFolder==null?"":l.installFolder;
-            set{
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InstallDir)));
             }
         }
 
@@ -121,25 +129,45 @@ namespace BlenderManager{
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsWebsite)));
         }
         ///<summary>
+        ///Function that allows to change the installation directory by opening a dialog.
+        ///</summary>
+        public async void SelectNewDir(){
+            var ofd = new OpenFolderDialog();
+            var dir = await ofd.ShowAsync(this.mainWindow);
+            if (dir == null)return;
+            InstallDirText=dir;
+            RefreshVersions();
+        }
+
+        ///<summary>
         ///Downloads a version from the blender releases page.
         ///This also extracts from an archive (if applicable).
         ///Should be called when clicking on a button as it depends on the version selected in the UI.
         ///</summary>
         public async Task DownloadVersion(){
-            var handler = new HttpClientHandler();
-            var ph=new ProgressMessageHandler(handler);
-            ph.HttpReceiveProgress += (_, args) => {
-                if (args.TotalBytes!=null)TotalBytes = args.TotalBytes; 
-                else TotalBytes=0;
-                CurrentBytes=args.BytesTransferred;
-            };
-            var client = new HttpClient(ph);
-            var bytes = await client.GetByteArrayAsync("https://download.blender.org/release/Blender"+WebVersionSelected+"/"+WebSystemSelected);
-            File.WriteAllBytes(l.installFolder + Path.DirectorySeparatorChar + "blender-"+WebSystemSelected, bytes);
+            Downloading = true;
+            try{
+                var handler = new HttpClientHandler();
+                var ph=new ProgressMessageHandler(handler);
+                ph.HttpReceiveProgress += (_, args) => {
+                    if (args.TotalBytes!=null)TotalBytes = args.TotalBytes; 
+                    else TotalBytes=0;
+                    CurrentBytes=args.BytesTransferred;
+                };
+                var client = new HttpClient(ph);
+                var bytes = await client.GetByteArrayAsync("https://download.blender.org/release/Blender"+WebVersionSelected+"/"+WebSystemSelected);
+                var outpath=l.installFolder + Path.DirectorySeparatorChar + "blender-"+WebSystemSelected;
+                File.WriteAllBytes(outpath, bytes);
+                l.Extract(outpath);
+                VersionsInstalled = l.Versions;
+            } catch{
+                Downloading = false;
+            }
+            Downloading=false;
+            RefreshVersions();
             
         }
         public void ButtonClicked() {
-            l.Extract("blender-2.40-windows.zip");
             l.installFolder = "/home/linuxcat/blender";
             var v = l.Versions;
             v.Sort((a,b) => a.versionString.CompareTo(b.versionString));

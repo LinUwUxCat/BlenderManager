@@ -2,21 +2,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="325"
         x:Class="BlenderManager.MainWindow"
         xmlns:local="clr-namespace:BlenderManager.ViewModels"
-        Title="Blender Manager">
+        Title="Blender Manager"
+        Width="1100"
+        Height="600">
         <Window.Styles>
             <StyleInclude Source="/Styles/Main.xaml"/>
         </Window.Styles>
 
     <StackPanel Margin="30">
         <Label Classes="h1" Content="{Binding TitleText}"/>
+        <StackPanel Orientation="Horizontal">
+            <Label Classes="installdirtext" Content="{Binding InstallDirText}"/>
+            <Button Classes="changeinstalldirbutton" Content="{Binding InstallDirButtonText}" Command="{Binding SelectNewDir}"/>
+        </StackPanel>
         <StackPanel Orientation="Vertical">
             <StackPanel Classes="panel-top"> <!-- Panel with the list of versions and some other text -->
-                <!-- <Label Content="Installation directory : "/>
-                <Label Content="{Binding InstallDir}"/>
-                <Button Content="Change" Command="{Binding ChangeInstallDir}"/> -->
 
                 <ListBox Items="{Binding Versions}" Background="transparent">
                     <ListBox.ItemTemplate>

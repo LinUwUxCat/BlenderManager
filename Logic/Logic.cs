@@ -109,36 +109,39 @@ class LogicSys{
     }
 
 
-    public bool Extract(string fname){
-        var outdir = this.installFolder+"/";
-        if (fname.EndsWith("tar.gz") || fname.EndsWith("tgz")){ //Gzip
-            var inS = File.OpenRead(this.installFolder+"/"+fname);
+    public bool Extract(string fpath){
+        var outdir = this.installFolder+Path.DirectorySeparatorChar;
+        if (fpath.EndsWith("tar.gz") || fpath.EndsWith("tgz")){ //Gzip
+            var inS = File.OpenRead(fpath);
             var gz = new GZipInputStream(inS);
             TarArchive tar = TarArchive.CreateInputTarArchive(gz, System.Text.Encoding.UTF8);
             tar.ExtractContents(outdir);
             tar.Close();
             gz.Close();
             inS.Close();
-        } else if (fname.EndsWith("tar.bz2") || fname.EndsWith("tbz")){ //Bzip2
-            var inS = File.OpenRead(this.installFolder + "/" + fname);
+        } else if (fpath.EndsWith("tar.bz2") || fpath.EndsWith("tbz")){ //Bzip2
+            var inS = File.OpenRead(fpath);
             var bz = new BZip2InputStream(inS);
             TarArchive tar = TarArchive.CreateInputTarArchive(bz, System.Text.Encoding.UTF8);
             tar.ExtractContents(outdir);
             tar.Close();
             bz.Close();
             inS.Close();
-        } else if (fname.EndsWith("tar.Z")){ //LZW
-            var inS = File.OpenRead(this.installFolder + "/" + fname);
+        } else if (fpath.EndsWith("tar.Z")){ //LZW
+            var inS = File.OpenRead(fpath);
             var z = new LzwInputStream(inS);
             TarArchive tar = TarArchive.CreateInputTarArchive(z, System.Text.Encoding.UTF8);
             tar.ExtractContents(outdir);
             tar.Close();
             z.Close();
             inS.Close();
-        } else if (fname.EndsWith("zip")){ //ZIP
+        } else if (fpath.EndsWith("zip")){ //ZIP
             FastZip fastZip = new FastZip();
-            fastZip.ExtractZip(this.installFolder + "/" + fname, outdir, null);
-        }
+            fastZip.ExtractZip(fpath, outdir, null);
+        } else if (fpath.EndsWith("exe")){
+            System.Diagnostics.Process.Start(fpath);
+        } else return false;
+        File.Delete(fpath);
         return true;
     }
 
