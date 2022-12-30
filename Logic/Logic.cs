@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System;
 using System.Net.Http;
 using System.Linq;
-using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.BZip2;
 using ICSharpCode.SharpZipLib.Lzw;
 using ICSharpCode.SharpZipLib.Tar;
-using ICSharpCode.SharpZipLib.Zip;
-using System.Formats.Tar;
+using SharpCompress.Readers;
 namespace Logic;
 
 public class Version{
@@ -113,23 +110,7 @@ class LogicSys{
 
     public bool Extract(string fpath){
         var outdir = this.installFolder+Path.DirectorySeparatorChar;
-        if (fpath.EndsWith("tar.gz") || fpath.EndsWith("tgz")){ //Gzip
-            var inS = File.OpenRead(fpath);
-            var gz = new GZipInputStream(inS);
-            TarArchive tar = TarArchive.CreateInputTarArchive(gz, System.Text.Encoding.UTF8);
-            tar.ExtractContents(outdir);
-            tar.Close();
-            gz.Close();
-            inS.Close();
-        } else if (fpath.EndsWith("tar.bz2") || fpath.EndsWith("tbz")){ //Bzip2
-            var inS = File.OpenRead(fpath);
-            var bz = new BZip2InputStream(inS);
-            TarArchive tar = TarArchive.CreateInputTarArchive(bz, System.Text.Encoding.UTF8);
-            tar.ExtractContents(outdir);
-            tar.Close();
-            bz.Close();
-            inS.Close();
-        } else if (fpath.EndsWith("tar.Z")){ //LZW
+        if (fpath.EndsWith("tar.Zz")){ //LZW (tar.Z)- we handle that with SharpZipLib because SharpCompress doesn't support it
             var inS = File.OpenRead(fpath);
             var z = new LzwInputStream(inS);
             TarArchive tar = TarArchive.CreateInputTarArchive(z, System.Text.Encoding.UTF8);
@@ -137,15 +118,22 @@ class LogicSys{
             tar.Close();
             z.Close();
             inS.Close();
-        } else if (fpath.EndsWith("tar.xz")){
-            Console.WriteLine("yes");
-            TarFile.ExtractToDirectory(fpath, outdir, true);
-        } else if (fpath.EndsWith("zip")){ //ZIP
-            FastZip fastZip = new FastZip();
-            fastZip.ExtractZip(fpath, outdir, null);
-        } else if (fpath.EndsWith("exe")){
+        } else if (fpath.EndsWith("exe") || fpath.EndsWith("msi") || fpath.EndsWith("msix")){ //windows executables 
             System.Diagnostics.Process.Start(fpath);
-        } else return false;
+        } else { //for other files we try to extract. 
+                 //SharpCompress supports LZMA (tar.xz), Gzip (tar.gz/tgz), Bzip2 (tar.bz2/tbz), Rar, tar, lzip (tar.lz i think), zip and 7z.
+                 //Of that we only need LZMA, GZip, BZip2, zip and 7z.
+                 //This will show an error in the console if we try something unsupported 
+            try{
+                using (Stream stream = File.OpenRead(fpath))
+                using (var reader = ReaderFactory.Open(stream)){
+                    reader.WriteAllToDirectory(outdir, new SharpCompress.Common.ExtractionOptions(){ ExtractFullPath=true, Overwrite=true });
+                }
+            } catch (Exception e){
+                Console.WriteLine(e);
+                return false;
+            }
+        }
         File.Delete(fpath);
         return true;
     }

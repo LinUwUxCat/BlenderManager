@@ -21,12 +21,30 @@ namespace BlenderManager{
     
     public class MainWindowViewModel : INotifyPropertyChanged{
         Window mainWindow;
+        FileSystemWatcher watcher;
         ///<summary>
         ///Initialisation of the main window. We want to load our config file here.
         ///</summary>
         public MainWindowViewModel(Window mainWindow){
             this.mainWindow = mainWindow;
             this.mainWindow.CanResize=false;
+            watcher = new FileSystemWatcher();
+            watcher.NotifyFilter = NotifyFilters.Attributes
+                                 | NotifyFilters.CreationTime
+                                 | NotifyFilters.DirectoryName
+                                 | NotifyFilters.LastAccess
+                                 | NotifyFilters.LastWrite
+                                 | NotifyFilters.Security
+                                 | NotifyFilters.FileName
+                                 | NotifyFilters.Size;
+            watcher.Created += refreshVersionsWhen;
+            watcher.Deleted += refreshVersionsWhen;
+            watcher.Renamed += refreshVersionsWhen;
+
+            watcher.EnableRaisingEvents=true;
+        }
+        private void refreshVersionsWhen(object sender, FileSystemEventArgs e){
+            RefreshVersions();
         }
 
         public void RefreshVersions(){
@@ -159,6 +177,7 @@ namespace BlenderManager{
             var dir = await ofd.ShowAsync(this.mainWindow);
             if (dir == null)return;
             InstallDirText=dir;
+            watcher.Path=dir;
             RefreshVersions();
         }
 

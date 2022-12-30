@@ -42,12 +42,16 @@ public class VersionViewModel : ReactiveObject{
 
     public void LaunchVersion(){
         var extension = _version.system == "windows"?".exe":"";
-        //System.Diagnostics.Process.Start(_version.path+Path.DirectorySeparatorChar+"blender"+extension);
+        System.Diagnostics.Process.Start(_version.path+Path.DirectorySeparatorChar+"blender"+extension);
         ButtonState=false;
         LaunchText = "Launched";
         //TODO : figure out asynchronous sleep
         LaunchText = "Launch";
         ButtonState=true;
+    }
+
+    public void RemoveVersion(){
+        Directory.Delete(_version.path, true);
     }
 
 }
