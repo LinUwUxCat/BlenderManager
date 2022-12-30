@@ -42,7 +42,15 @@ public class VersionViewModel : ReactiveObject{
 
     public void LaunchVersion(){
         var extension = _version.system == "windows"?".exe":"";
-        System.Diagnostics.Process.Start(_version.path+Path.DirectorySeparatorChar+"blender"+extension);
+        try{
+            System.Diagnostics.Process.Start(_version.path+Path.DirectorySeparatorChar+"blender"+extension);
+        } catch {
+            try {
+               System.Diagnostics.Process.Start("chmod", "+x " + _version.path+Path.DirectorySeparatorChar+"blender"+extension);
+            } catch {
+                System.Console.WriteLine("Could not start the process!");
+            }
+        }
         ButtonState=false;
         LaunchText = "Launched";
         //TODO : figure out asynchronous sleep
