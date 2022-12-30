@@ -17,14 +17,18 @@
     </Style>
     <Style Selector="ListBoxItem">
         <Setter Property="Margin" Value="7"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="CornerRadius" Value="15"/>
         <Setter Property="Background" Value="#2C2C2C"/>
     </Style>
-    <Style Selector="ListBoxItem StackPanel Label.versionnumber">
+    <Style Selector="ListBoxItem Grid Label.versionnumber">
         <Setter Property="FontSize" Value="22"/>
     </Style>
-    <Style Selector="ListBoxItem StackPanel Label.folderpath">
+    <Style Selector="ListBoxItem Grid Label.folderpath">
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="Foreground" Value="gray"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="ListBox.versionlist">
+        <Setter Property="Height" Value="340"/>
     </Style>
 </Styles>

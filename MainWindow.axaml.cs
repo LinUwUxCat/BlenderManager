@@ -26,6 +26,7 @@ namespace BlenderManager{
         ///</summary>
         public MainWindowViewModel(Window mainWindow){
             this.mainWindow = mainWindow;
+            this.mainWindow.CanResize=false;
         }
 
         public void RefreshVersions(){
@@ -102,11 +103,17 @@ namespace BlenderManager{
         public List<string> _listWithVersion=new();
         public string? _webVersionSelected;
         public string? _webSystemSelected;
+        public bool _systemDropDownEnabled;
+        public bool _downloadButtonEnabled;
         public string? WebVersionSelected{
             get=>_webVersionSelected;
             set{
-                if (value!=null)_listWithVersion = l.GetListFromVersion(value);
-                else _listWithVersion = new();
+                SystemDropDownEnabled=value!=null;
+                if (value!=null){
+                    _listWithVersion = l.GetListFromVersion(value);
+                } else{
+                    _listWithVersion = new();
+                } 
                 _webVersionSelected=value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ListWithVersion)));
             }
@@ -114,8 +121,23 @@ namespace BlenderManager{
         public string? WebSystemSelected{
             get=>_webSystemSelected;
             set{
+                DownloadButtonEnabled=value!=null;
                 _webSystemSelected=value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WebVersionSelected)));
+            }
+        }
+        public bool SystemDropDownEnabled{
+            get=>_systemDropDownEnabled;
+            set{
+                _systemDropDownEnabled=value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SystemDropDownEnabled)));
+            }
+        }
+        public bool DownloadButtonEnabled{
+            get=>_downloadButtonEnabled;
+            set{
+                _downloadButtonEnabled=value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DownloadButtonEnabled)));
             }
         }
 
@@ -125,6 +147,7 @@ namespace BlenderManager{
         }
 
         public void ReloadVersionsFromWebsite(){
+            DownloadButtonEnabled=false;
             _versionList = l.GetVersionListFromWeb();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsWebsite)));
         }
@@ -165,22 +188,6 @@ namespace BlenderManager{
             }
             Downloading=false;
             RefreshVersions();
-            
-        }
-        public void ButtonClicked() {
-            l.installFolder = "/home/linuxcat/blender";
-            var v = l.Versions;
-            v.Sort((a,b) => a.versionString.CompareTo(b.versionString));
-            for(int i=Versions.Count-1; i>=0; i--){
-                Versions.Remove(Versions[i]);
-            }
-            if (v!=null){
-                foreach(Version l in v){
-                    Versions.Add(new VersionViewModel(l));
-                }
-            }
-            _versionList = l.GetVersionListFromWeb();
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VersionsInstalled)));
         }
     }
 }

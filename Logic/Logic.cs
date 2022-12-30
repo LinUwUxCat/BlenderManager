@@ -8,6 +8,7 @@ using ICSharpCode.SharpZipLib.BZip2;
 using ICSharpCode.SharpZipLib.Lzw;
 using ICSharpCode.SharpZipLib.Tar;
 using ICSharpCode.SharpZipLib.Zip;
+using System.Formats.Tar;
 namespace Logic;
 
 public class Version{
@@ -90,6 +91,7 @@ class LogicSys{
                 }
             }
         }
+        l.Reverse(); //we want to have latest version first - this is more user-friendly
         return l;
     }
 
@@ -135,6 +137,9 @@ class LogicSys{
             tar.Close();
             z.Close();
             inS.Close();
+        } else if (fpath.EndsWith("tar.xz")){
+            Console.WriteLine("yes");
+            TarFile.ExtractToDirectory(fpath, outdir, true);
         } else if (fpath.EndsWith("zip")){ //ZIP
             FastZip fastZip = new FastZip();
             fastZip.ExtractZip(fpath, outdir, null);
