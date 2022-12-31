@@ -47,6 +47,7 @@ public class VersionViewModel : ReactiveObject{
         } catch {
             try {
                System.Diagnostics.Process.Start("chmod", "+x " + _version.path+Path.DirectorySeparatorChar+"blender"+extension);
+               System.Diagnostics.Process.Start(_version.path+Path.DirectorySeparatorChar+"blender"+extension);
             } catch {
                 System.Console.WriteLine("Could not start the process!");
             }
