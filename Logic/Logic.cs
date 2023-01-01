@@ -110,7 +110,7 @@ class LogicSys{
 
     public bool Extract(string fpath){
         var outdir = this.installFolder+Path.DirectorySeparatorChar;
-        if (fpath.EndsWith("tar.Zz")){ //LZW (tar.Z)- we handle that with SharpZipLib because SharpCompress doesn't support it
+        if (fpath.EndsWith("tar.Z")){ //LZW (tar.Z)- we handle that with SharpZipLib because SharpCompress doesn't support it
             var inS = File.OpenRead(fpath);
             var z = new LzwInputStream(inS);
             TarArchive tar = TarArchive.CreateInputTarArchive(z, System.Text.Encoding.UTF8);
