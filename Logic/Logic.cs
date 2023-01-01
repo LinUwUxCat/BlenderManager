@@ -125,12 +125,25 @@ class LogicSys{
                  //Of that we only need LZMA, GZip, BZip2, zip and 7z.
                  //This will show an error in the console if we try something unsupported 
             try{
+                var symlinks = new List<List<string>>();
                 using (Stream stream = File.OpenRead(fpath))
                 using (var reader = ReaderFactory.Open(stream)){
-                    reader.WriteAllToDirectory(outdir, new SharpCompress.Common.ExtractionOptions(){ ExtractFullPath=true, Overwrite=true });
+                    while (reader.MoveToNextEntry()){
+                        if (!reader.Entry.IsDirectory){
+                            if (reader.Entry.LinkTarget!=null){
+                                symlinks.Add(new List<string>{reader.Entry.LinkTarget, reader.Entry.Key});
+                            } else {
+                                reader.WriteEntryToDirectory(outdir, new SharpCompress.Common.ExtractionOptions(){ ExtractFullPath=true, Overwrite=true});
+                            }
+                        }
+                    }
+                }
+                foreach(List<string> pair in symlinks){
+                    File.CreateSymbolicLink(outdir+pair[1], pair[0]);
                 }
             } catch (Exception e){
-                Console.WriteLine(e);
+                Console.WriteLine("An error occured! " + e);
+                File.Delete(fpath);
                 return false;
             }
         }

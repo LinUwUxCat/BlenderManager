@@ -14,7 +14,6 @@ public class VersionViewModel : ReactiveObject{
         _version = version;
     }
     
-    public bool ButtonState=true;
     public string _launchText = "Launch";
     public string LaunchText {
         get=>_launchText;
@@ -46,17 +45,12 @@ public class VersionViewModel : ReactiveObject{
             System.Diagnostics.Process.Start(_version.path+Path.DirectorySeparatorChar+"blender"+extension);
         } catch {
             try {
-               System.Diagnostics.Process.Start("chmod", "+x " + _version.path+Path.DirectorySeparatorChar+"blender"+extension);
+               System.Diagnostics.Process.Start("chmod", "+x \"" + _version.path+Path.DirectorySeparatorChar+"blender"+extension+"\"");
                System.Diagnostics.Process.Start(_version.path+Path.DirectorySeparatorChar+"blender"+extension);
-            } catch {
-                System.Console.WriteLine("Could not start the process!");
+            } catch (System.Exception e) {
+                System.Console.WriteLine("Could not start the process! Error : "+e);
             }
         }
-        ButtonState=false;
-        LaunchText = "Launched";
-        //TODO : figure out asynchronous sleep
-        LaunchText = "Launch";
-        ButtonState=true;
     }
 
     public void RemoveVersion(){
