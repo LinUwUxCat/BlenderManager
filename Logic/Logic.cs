@@ -1,6 +1,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System;
+using System.Text.Json;
 using System.Net.Http;
 using System.Linq;
 using ICSharpCode.SharpZipLib.Lzw;
@@ -29,7 +30,10 @@ class LogicSys{
         set{
             if (!Directory.Exists(value)){
                 folder=null;
-            } else folder=value;
+            } else {
+                folder=value;
+                File.WriteAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "BlenderManager.conf"), value);
+            }
         }
     }
 

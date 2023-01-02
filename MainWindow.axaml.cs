@@ -22,6 +22,7 @@ namespace BlenderManager{
     public class MainWindowViewModel : INotifyPropertyChanged{
         Window mainWindow;
         FileSystemWatcher watcher;
+        LogicSys l;
         ///<summary>
         ///Initialisation of the main window. We want to load our config file here.
         ///</summary>
@@ -42,6 +43,13 @@ namespace BlenderManager{
             watcher.Renamed += refreshVersionsWhen;
 
             watcher.EnableRaisingEvents=true;
+
+            l = new LogicSys();
+            if(File.Exists(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "BlenderManager.conf"))){
+                l.installFolder = File.ReadAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "BlenderManager.conf"));
+            }
+            RefreshVersions();
+            
         }
         private void refreshVersionsWhen(object sender, FileSystemEventArgs e){
             RefreshVersions();
@@ -69,7 +77,7 @@ namespace BlenderManager{
         }
         
        
-        LogicSys l = new LogicSys();
+        
         List<string> _versionList = new();
         public string InstallDirText{
             get=>l.installFolder==null?"No install folder is set!":"Your blender installation folder is "+l.installFolder;
