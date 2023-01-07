@@ -45,9 +45,8 @@ namespace BlenderManager{
             watcher.EnableRaisingEvents=true;
 
             l = new LogicSys();
-            var exedir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location)==null?"":Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-            if(File.Exists(Path.Combine(exedir, "BlenderManager.conf"))){
-                l.installFolder = File.ReadAllText(Path.Combine(exedir, "BlenderManager.conf"));
+            if(File.Exists(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "BlenderManager.conf"))){
+                l.installFolder = File.ReadAllText(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "BlenderManager.conf"));
             }
             RefreshVersions();
             

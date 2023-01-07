@@ -29,7 +29,7 @@ public class VersionViewModel : ReactiveObject{
     }
     public Bitmap? Icon{
         get{
-            var assetPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)+Path.DirectorySeparatorChar+"Assets"+Path.DirectorySeparatorChar;
+            var assetPath = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory)+Path.DirectorySeparatorChar+"Assets"+Path.DirectorySeparatorChar;
             if(!Path.Exists(assetPath))return null;
             if (Path.Exists(assetPath+"icon-"+_version.system+".png")){
                 return new(assetPath+"icon-"+_version.system+".png");
