@@ -32,7 +32,8 @@ class LogicSys{
                 folder=null;
             } else {
                 folder=value;
-                File.WriteAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "BlenderManager.conf"), value);
+                var exedir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location)==null?"":Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                File.WriteAllText(Path.Combine(exedir, "BlenderManager.conf"), value);
             }
         }
     }
