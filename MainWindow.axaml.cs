@@ -56,10 +56,8 @@ namespace BlenderManager{
         }
 
         public void RefreshVersions(){
-            var v = l.Versions;
-            v.Sort((a,b) => b.versionString.CompareTo(a.versionString));
             Versions.Clear();
-            foreach(Version ver in v){
+            foreach(Version ver in l.Versions){
                 Versions.Add(new VersionViewModel(ver));
             }
         }
@@ -115,7 +113,7 @@ namespace BlenderManager{
             }
         }
 
-        public ObservableCollection<VersionViewModel> Versions {get;} = new();
+        public static ObservableCollection<VersionViewModel> Versions {get;} = new();
 
         public List<Version> VersionsInstalled{
             get=>l.Versions;

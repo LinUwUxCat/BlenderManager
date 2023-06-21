@@ -2,18 +2,17 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using System.IO;
 using System.Collections.Generic;
+using System.ComponentModel;
 using ReactiveUI;
 using Logic;
 
 namespace BlenderManager.ViewModels;
-public class VersionViewModel : ReactiveObject{
+public class VersionViewModel : ReactiveObject, INotifyPropertyChanged{
     private readonly Version _version;
     private Bitmap? _icon;
-
     public VersionViewModel(Version version){
         _version = version;
     }
-    
     public string _launchText = "Launch";
     public string LaunchText {
         get=>_launchText;
@@ -54,7 +53,12 @@ public class VersionViewModel : ReactiveObject{
     }
 
     public void RemoveVersion(){
-        Directory.Delete(_version.path, true);
+        try{
+            Directory.Delete(_version.path, true);
+            MainWindowViewModel.Versions.Remove(this);
+        } catch (System.Exception e){
+            System.Console.WriteLine(e);
+        }
     }
 
 }

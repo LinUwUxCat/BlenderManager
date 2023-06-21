@@ -65,6 +65,7 @@ class LogicSys{
                     }
                 }
             }
+            r.Sort((a,b) => b.versionString.CompareTo(a.versionString));
             return r;
 
         }
